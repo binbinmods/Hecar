@@ -2687,16 +2687,16 @@
     "/Users/kevinmccoy/.nuget/packages/": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "0.9.0",
     "restore": {
-      "projectUniqueName": "/Users/kevinmccoy/Library/Application Support/Steam/steamapps/common/Across the Obelisk/BepInEx/Mod Development/Hero Creations/#WorkspaceTemplate/CharacterTraits/TheSubclass.csproj",
-      "projectName": "com.binbin.Subclass",
-      "projectPath": "/Users/kevinmccoy/Library/Application Support/Steam/steamapps/common/Across the Obelisk/BepInEx/Mod Development/Hero Creations/#WorkspaceTemplate/CharacterTraits/TheSubclass.csproj",
+      "projectUniqueName": "/Users/kevinmccoy/Library/Application Support/Steam/steamapps/common/Across the Obelisk/BepInEx/Mod Development/Hero Creations/Hecar/HecarTraits/Hecar.csproj",
+      "projectName": "com.binbin.Hecar",
+      "projectPath": "/Users/kevinmccoy/Library/Application Support/Steam/steamapps/common/Across the Obelisk/BepInEx/Mod Development/Hero Creations/Hecar/HecarTraits/Hecar.csproj",
       "packagesPath": "/Users/kevinmccoy/.nuget/packages/",
-      "outputPath": "/Users/kevinmccoy/Library/Application Support/Steam/steamapps/common/Across the Obelisk/BepInEx/Mod Development/Hero Creations/#WorkspaceTemplate/CharacterTraits/obj/",
+      "outputPath": "/Users/kevinmccoy/Library/Application Support/Steam/steamapps/common/Across the Obelisk/BepInEx/Mod Development/Hero Creations/Hecar/HecarTraits/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/kevinmccoy/Library/Application Support/Steam/steamapps/common/Across the Obelisk/BepInEx/Mod Development/Hero Creations/#WorkspaceTemplate/CharacterTraits/NuGet.Config",
+        "/Users/kevinmccoy/Library/Application Support/Steam/steamapps/common/Across the Obelisk/BepInEx/Mod Development/Hero Creations/Hecar/HecarTraits/NuGet.Config",
         "/Users/kevinmccoy/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [

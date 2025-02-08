@@ -7,10 +7,10 @@ using Obeliskial_Essentials;
 using System.IO;
 using static UnityEngine.Mathf;
 using UnityEngine.TextCore.LowLevel;
-using static TheSubclass.Plugin;
+using static Hecar.Plugin;
 using System.Collections.ObjectModel;
 
-namespace TheSubclass
+namespace Hecar
 {
     public class CustomFunctions
     {

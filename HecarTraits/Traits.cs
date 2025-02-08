@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Obeliskial_Content;
 using UnityEngine;
-using static TheSubclass.CustomFunctions;
-using static TheSubclass.Plugin;
+using static Hecar.CustomFunctions;
+using static Hecar.Plugin;
 
-namespace TheSubclass
+namespace Hecar
 {
     [HarmonyPatch]
     internal class Traits
@@ -27,6 +27,11 @@ namespace TheSubclass
         static string trait4a = myTraitList[7];
         static string trait4b = myTraitList[8];
 
+        public static bool isDamagePreviewActive = false;
+
+        public static bool isCalculateDamageActive = false;
+        public static int infiniteProctection = 0;
+        public static int infiniteProctectionPowerful = 0;
 
         public static string debugBase = "Binbin - Testing " + heroName + " ";
 
@@ -56,7 +61,7 @@ namespace TheSubclass
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
                 LogDebug($"Handling Trait {traitId}: {traitName}");
-
+                // When this hero would overheal a character, apply Shield equal to 50% of the amount overhealed (Benefits 50% from Shield bonuses). Suffer 20% of the amount as Shielded as Insane.
                 if (CanIncrementTraitActivations(_trait))
                 {
                     IncrementTraitActivations(_trait);
@@ -67,11 +72,20 @@ namespace TheSubclass
 
 
             else if (_trait == trait2a)
-            { // TODO trait 2a
+            {
+                // Scourge on this hero increases Damage and Healing by 10% per charge.
+                // When this character blocks, Suffer and Apply 2 Scourge. 
+
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
                 LogDebug($"Handling Trait {traitId}: {traitName}");
                 DisplayTraitScroll(ref _character, traitData);
+
+                if(_character!=null&&_target!=null&&_character.Alive&&_target.Alive)
+                {
+                    _character.SetAuraTrait(_character,"scourge",2);
+                    _target.SetAuraTrait(_character,"scourge",2);
+                }
 
             }
 
@@ -83,11 +97,34 @@ namespace TheSubclass
                 string traitId = _trait;
                 LogDebug($"Handling Trait {traitId}: {traitName}");
                 DisplayTraitScroll(ref _character, traitData);
+                // Insane on this hero increases Shield charges by 1 per 20 insane.
+                // If this character has more than 40 insane, when they cast a spell, reduce insane by 25%. Decrease the cost of their highest cost card by 1 for every 10 Insane removed (2x per turn).
+                if(!IsLivingHero(_character)||_character.GetAuraCharges("insane")<40)
+                {
+                    return;
+                }
+
+                int bonusActivations = _character.HaveTrait(trait4a) ? 1 : 0;
+                if(CanIncrementTraitActivations(traitId))
+                {                    
+                    AuraCurseData insane = GetAuraCurseData("insane");
+                    int nInsane = _character.GetAuraCharges("insane");
+                    int insaneToApply = Mathf.RoundToInt(nInsane*0.75f);
+                    int amountToReduce = Mathf.FloorToInt(nInsane*0.025f);
+                    _character.HealAuraCurse(insane);
+                    _character.SetAura(_character,insane,insaneToApply);
+                    IncrementTraitActivations(traitId);
+                
+                }
+                
 
             }
 
             else if (_trait == trait4a)
-            { // TODO trait 4a
+            { // Scourge on all characters can stack. 
+                // Scourge on enemies reduces damage done by 5% per charge (caps at 50%). 
+                // Increases activations of 2b by 1. 
+
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
                 LogDebug($"Handling Trait {traitId}: {traitName}");
@@ -95,16 +132,11 @@ namespace TheSubclass
             }
 
             else if (_trait == trait4b)
-            { // TODO trait 4b
-                string traitName = traitData.TraitName;
-                string traitId = _trait;
-                LogDebug($"Handling Trait {traitId}: {traitName}");
-                if (CanIncrementTraitActivations(_trait))
-                {
-                    IncrementTraitActivations(_trait);
-                    DisplayRemainingChargesForTrait(ref _character, traitData);
+            {
+                // 4b: Insane on this hero increases mind damage and healing by 2% per charge.
+                // 4b: Crack on enemies decreases mind resistance by 1% per charge.
+                // Done in GACM
 
-                }
             }
 
         }
@@ -129,43 +161,6 @@ namespace TheSubclass
             return true;
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(Character), "SetEvent")]
-        public static void SetEventPrefix(ref Character __instance, ref Enums.EventActivation theEvent, Character target = null)
-        {
-            /*if (theEvent == Enums.EventActivation.AuraCurseSet && !__instance.IsHero && target != null && target.IsHero && target.HaveTrait("ulfvitrconductor") && __instance.HasEffect("spark"))
-            { // if NPC has wet applied to them, deal 50% of their sparks as indirect lightning damage
-                __instance.IndirectDamage(Enums.DamageType.Lightning, Functions.FuncRoundToInt((float)__instance.GetAuraCharges("spark") * 0.5f));
-            }
-            if (theEvent == Enums.EventActivation.BeginTurn && __instance.IsHero && (__instance.HaveTrait("pestilyhealingtoxins")||__instance.HaveTrait("pestilytoxichealing"))){
-                level5ActivationCounter=0;
-                // Plugin.Log.LogInfo("Binbin - PestilyBiohealer - Reset Activation Counter: "+ level5ActivationCounter);
-            }
-            
-            */
-        }
-
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(AtOManager), "HeroLevelUp")]
-        public static bool HeroLevelUpPrefix(ref AtOManager __instance, Hero[] ___teamAtO, int heroIndex, string traitId)
-        {
-            Hero hero = ___teamAtO[heroIndex];
-            Plugin.Log.LogDebug(debugBase + "Level up before conditions for subclass " + hero.SubclassName + " trait id " + traitId);
-
-            string traitOfInterest = myTraitList[4]; //Learn real magic
-            if (hero.AssignTrait(traitId))
-            {
-                TraitData traitData = Globals.Instance.GetTraitData(traitId);
-                if ((UnityEngine.Object)traitData != (UnityEngine.Object)null && traitId == traitOfInterest)
-                {
-                    Plugin.Log.LogDebug(debugBase + "Learn Real Magic inside conditions");
-                    Globals.Instance.SubClass[hero.SubclassName].HeroClassSecondary = Enums.HeroClass.Mage;
-                }
-
-            }
-            return true;
-        }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(AtOManager), "GlobalAuraCurseModificationByTraitsAndItems")]
@@ -178,18 +173,100 @@ namespace TheSubclass
 
             switch (_acId)
             {
-                case "burn":
-                    traitOfInterest = trait0;
-                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.None))
+                // 2a: Scourge on this hero increases Damage and Healing by 10% per charge.
+                // 4a: Scourge on enemies reduces damage done by 5% per charge (caps at 50%). 
+                // 4b: Insane on this hero increases mind damage and healing by 2% per charge.
+                // 4b: Crack on enemies decreases mind resistance by 1% per charge.
+                case "scourge":
+                    traitOfInterest = trait2a;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
                     {
-                        __result.ACName = "something";
+                        __result.AuraDamageType2 = Enums.DamageType.All;
+                        __result.AuraDamageIncreasedPercentPerStack2 = 10.0f;
+                        __result.HealDonePercentPerStack = 10;
+
+                    }
+
+                    traitOfInterest = trait4a;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Monsters))
+                    {
+                        __result.AuraDamageType3 = Enums.DamageType.All;
+                        __result.AuraDamageIncreasedPercentPerStack3 = -5.0f;
+                    }
+                    break;
+
+                case "crack":
+                    traitOfInterest = trait4b;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Monsters))
+                    {
+                        __result = __instance.GlobalAuraCurseModifyResist(__result, Enums.DamageType.Mind, 0, 1.0f);
+                    }
+                    break;
+
+                case "mind":
+                    traitOfInterest = trait4b;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
+                    {
+                        __result.AuraDamageType3 = Enums.DamageType.Mind;
+                        __result.AuraDamageIncreasedPercentPerStack3 = 2.0f;
+                        __result.HealDonePercentPerStack = 2;
+
                     }
                     break;
             }
-
         }
 
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Character), nameof(Character.HealReceivedFinal))]
+        public static void HealReceivedFinalPrefix(Character __instance, int __result, int heal, bool isIndirect = false)
+        {
+            if (infiniteProctection > 100)
+                return;
+            if (isDamagePreviewActive || isCalculateDamageActive)
+                return;
+            if (MatchManager.Instance == null)
+                return;
+            if (!IsLivingHero(__instance) || MatchManager.Instance.GetHeroHeroActive() == null)
+                return;
+
+            infiniteProctection++;
+
+            // MatchManager.Instance.cast
+            Hero activeHero = MatchManager.Instance.GetHeroHeroActive();
+            PLog("Inf " + infiniteProctection);
+            PLog("Active Hero: " + activeHero.SubclassName);
+            PLog("Targeted/Instanced Hero: " + __instance.SubclassName);
+            if (__result >= 0 && activeHero.HaveTrait(trait0) && IsLivingHero(__instance) && IsLivingHero(activeHero) && heal > 0 && !isIndirect)
+            {
+                int amountOverhealed = __result - __instance.GetHpLeftForMax();
+                if (amountOverhealed<=0) {return;}            
+                int amountToShield = Mathf.RoundToInt((amountOverhealed + activeHero.AuraCurseModification["shield"])*0.5f);
+                __instance.SetAura(__instance, GetAuraCurseData("shield"), amountToShield, useCharacterMods: false);
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(MatchManager), nameof(MatchManager.SetDamagePreview))]
+        public static void SetDamagePreviewPrefix()
+        {
+            isDamagePreviewActive = true;
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(MatchManager), nameof(MatchManager.SetDamagePreview))]
+        public static void SetDamagePreviewPostfix()
+        {
+            isDamagePreviewActive = false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Character), nameof(Character.BeginTurn))]
+        public static void BeginTurnPrefix(ref Character __instance)
+        {
+ 
+            infiniteProctection = 0;
+        }
 
     }
 }
+

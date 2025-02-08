@@ -6,10 +6,10 @@ using Obeliskial_Essentials;
 using System.IO;
 using UnityEngine;
 using System;
-using static TheSubclass.Traits;
+using static Hecar.Traits;
 using BepInEx.Configuration;
 
-namespace TheSubclass
+namespace Hecar
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     [BepInDependency("com.stiffmeds.obeliskialessentials")]
