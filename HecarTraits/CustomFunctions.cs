@@ -636,26 +636,7 @@ namespace Hecar
             return AtOManager.Instance.TeamHavePerk(perkBase + perkName) || AtOManager.Instance.TeamHavePerk(perkName);
         }
 
-        /// <summary>
-        /// Places a little text scroll of the trait's name when a character's trait activates.
-        /// </summary>
-        /// <param name="_character"> Character the trait comes from</param>
-        /// <param name="traitData"> Trait to display the name of</param>
-        public static void DisplayTraitScroll(ref Character _character, TraitData traitData)
-        {
-            _character.HeroItem?.ScrollCombatText(Texts.Instance.GetText("traits_" + traitData.TraitName, ""),Enums.CombatScrollEffectType.Trait);
-        }
 
-                /// <summary>
-        /// Places a little text scroll of the trait's name when a character's trait activates.
-        /// </summary>
-        /// <param name="_character"> Character the trait comes from</param>
-        /// <param name="traitName"> Name to Display</param>
-
-        public static void DisplayTraitScroll(ref Character _character, string traitName)
-        {
-            _character.HeroItem?.ScrollCombatText(Texts.Instance.GetText("traits_" + traitName, ""),Enums.CombatScrollEffectType.Trait);
-        }
         /// <summary>
         /// Checks to see if your team has an item/trait/perk in the global aura curse modification function.
         /// </summary>
@@ -898,6 +879,27 @@ namespace Hecar
         }
 
         /// <summary>
+        /// Places a little text scroll of the trait's name when a character's trait activates.
+        /// </summary>
+        /// <param name="_character"> Character the trait comes from</param>
+        /// <param name="traitData"> Trait to display the name of</param>
+        public static void DisplayTraitScroll(ref Character _character, TraitData traitData)
+        {
+            _character.HeroItem?.ScrollCombatText(Texts.Instance.GetText("traits_" + traitData.TraitName, ""), Enums.CombatScrollEffectType.Trait);
+        }
+
+        /// <summary>
+        /// Places a little text scroll of the trait's name when a character's trait activates.
+        /// </summary>
+        /// <param name="_character"> Character the trait comes from</param>
+        /// <param name="traitName"> Name to Display</param>
+
+        public static void DisplayTraitScroll(ref Character _character, string traitName)
+        {
+            _character.HeroItem?.ScrollCombatText(Texts.Instance.GetText("traits_" + traitName, ""), Enums.CombatScrollEffectType.Trait);
+        }
+
+        /// <summary>
         /// Checks to see if a trait can be incremented. If so, it increments it.
         /// </summary>
         /// <param name="traitData">The Trait we are incrementing</param>
@@ -932,7 +934,7 @@ namespace Hecar
         /// Checks to see if you can increment a Trait's activations
         /// </summary>
         /// <param name="traitData">The Trait we are checking</param>
-        public static bool CanIncrementTraitActivations(TraitData traitData)
+        public static bool CanIncrementTraitActivations(TraitData traitData, int bonusActivations = 0)
         {
             LogDebug("canIncrementTraitActivations");
             if (traitData == null)
@@ -948,7 +950,7 @@ namespace Hecar
             {
                 return false;
             }
-            if (MatchManager.Instance.activatedTraits.ContainsKey(traitId) && MatchManager.Instance.activatedTraits[traitId] > traitData.TimesPerTurn - 1)
+            if (MatchManager.Instance.activatedTraits.ContainsKey(traitId) && MatchManager.Instance.activatedTraits[traitId] > traitData.TimesPerTurn - 1 + bonusActivations)
             {
                 // LogDebug("False v2");
                 // LogDebug($"Activation Dict - {CollectionToString(MatchManager.Instance.activatedTraits)}");
@@ -967,10 +969,10 @@ namespace Hecar
         /// Checks to see if you can increment a Trait's activations
         /// </summary>
         /// <param name="traitId">The id of the trait we are checking</param>
-        public static bool CanIncrementTraitActivations(string traitId)
+        public static bool CanIncrementTraitActivations(string traitId, int bonusActivations = 0)
         {
             TraitData traitData = Globals.Instance.GetTraitData(traitId);
-            return CanIncrementTraitActivations(traitData);
+            return CanIncrementTraitActivations(traitData, bonusActivations);
         }
         /// <summary>
         /// Specifies whether should apply to Auras, Curses, or Both (used when modifying AuraCurses)
@@ -1310,27 +1312,39 @@ namespace Hecar
         /// <param name="currentCharacter">character to reduce the cards for. If null, gets the current active hero.</param>
         /// <param name="amountToReduce">Amount to reduce the card's cost by</param>
         /// <param name="isPermanent">If true, makes the reduction permanent.</param>
-        public static void ReduceCardCost(ref CardData cardData, Character currentCharacter= null, int amountToReduce = 1, bool isPermanent = false)
+        public static void ReduceCardCost(ref CardData cardData, Character currentCharacter = null, int amountToReduce = 1, bool isPermanent = false)
         {
-            if (MatchManager.Instance == null)
+            if (MatchManager.Instance == null || cardData == null)
             {
-                LogError("Null MatchManager");
+                LogError("Null MatchManager/card");
                 return;
             }
 
+            LogDebug("Reducing card Cost");
             currentCharacter ??= MatchManager.Instance.GetHeroHeroActive();
+
+            if (currentCharacter == null)
+            {
+                LogError("Null Current Character");
+                return;
+            }
+
             if (isPermanent)
             {
+                LogDebug("Reducing card Cost - permanent");
                 cardData.EnergyReductionPermanent += amountToReduce;
             }
             else
             {
+                LogDebug("Reducing card Cost - temporary");
                 cardData.EnergyReductionTemporal += amountToReduce;
             }
+            LogDebug("Reducing card Cost - updates");
             MatchManager.Instance.GetCardFromTableByIndex(cardData.InternalId).ShowEnergyModification(-amountToReduce);
             MatchManager.Instance.UpdateHandCards();
             // this.character.HeroItem.ScrollCombatText(Texts.Instance.GetText("traits_Scholar") + TextChargesLeft(MatchManager.Instance.activatedTraits[nameof (scholar)], traitData.TimesPerTurn), Enums.CombatScrollEffectType.Trait);
             MatchManager.Instance.CreateLogCardModification(cardData.InternalId, MatchManager.Instance.GetHero(currentCharacter.HeroIndex));
+            LogDebug("Reducing card Cost - END");
         }
 
 
@@ -1340,7 +1354,7 @@ namespace Hecar
         /// <param name="heroHand"> The hero's hand. If null, gets the current active hero's hand.</param>
         /// <param name="cardType">The cardType you are looking for. Use None to specify any card.</param>
         /// <returns>A random card with the highest cost of cardType. Returns null if card is not found.</returns>
-        public static CardData GetRandomHighestCostCard(Enums.CardType cardType, List<string> heroHand= null)
+        public static CardData GetRandomHighestCostCard(Enums.CardType cardType, List<string> heroHand = null)
         {
             if (MatchManager.Instance == null)
             {
@@ -1350,11 +1364,11 @@ namespace Hecar
             heroHand ??= MatchManager.Instance.GetHeroHand(MatchManager.Instance.GetHeroActive());
 
             int num1 = 0;
-            List<CardData> cardDataList = new(); 
+            List<CardData> cardDataList = new();
             for (int index = 0; index < heroHand.Count; ++index)
             {
                 CardData cardData = MatchManager.Instance.GetCardData(heroHand[index]);
-                if ((Object)cardData != (Object)null && cardData.GetCardTypes().Contains(cardType) && cardData.GetCardFinalCost() > num1)
+                if ((Object)cardData != (Object)null && (cardData.GetCardTypes().Contains(cardType)||cardType==Enums.CardType.None) && cardData.GetCardFinalCost() > num1)
                     num1 = cardData.GetCardFinalCost();
             }
             if (num1 <= 0)
@@ -1362,7 +1376,7 @@ namespace Hecar
             for (int index = 0; index < heroHand.Count; ++index)
             {
                 CardData cardData = MatchManager.Instance.GetCardData(heroHand[index]);
-                if ((Object)cardData != (Object)null && cardData.GetCardTypes().Contains(cardType) && cardData.GetCardFinalCost() >= num1)
+                if ((Object)cardData != (Object)null && (cardData.GetCardTypes().Contains(cardType)||cardType==Enums.CardType.None) && cardData.GetCardFinalCost() >= num1)
                     cardDataList.Add(cardData);
             }
             if (cardDataList.Count <= 0)
@@ -1389,7 +1403,7 @@ namespace Hecar
             for (int index = 0; index < heroHand.Count; ++index)
             {
                 CardData cardData = MatchManager.Instance.GetCardData(heroHand[index]);
-                if ((UnityEngine.Object)cardData != (UnityEngine.Object)null && cardData.GetCardFinalCost() > 0 && (cardData.GetCardTypes().Contains(cardType)||cardType==Enums.CardType.None) && cardData.GetCardFinalCost() >= equalOrAboveCertainCost && cardData.GetCardFinalCost() <= lessThanOrEqualToThisCost)
+                if ((UnityEngine.Object)cardData != (UnityEngine.Object)null && cardData.GetCardFinalCost() > 0 && (cardData.GetCardTypes().Contains(cardType) || cardType == Enums.CardType.None) && cardData.GetCardFinalCost() >= equalOrAboveCertainCost && cardData.GetCardFinalCost() <= lessThanOrEqualToThisCost)
                     cardDataList.Add(cardData);
             }
             return cardDataList;
@@ -1411,7 +1425,7 @@ namespace Hecar
             for (int index = 0; index < heroHand.Count; ++index)
             {
                 CardData cardData = MatchManager.Instance.GetCardData(heroHand[index]);
-                if ((UnityEngine.Object)cardData != (UnityEngine.Object)null && cardData.GetCardFinalCost() > 0 && (cardData.GetCardTypes().Contains(cardType)||cardType==Enums.CardType.None) && cardData.GetCardFinalCost() >= equalOrAboveCertainCost && cardData.GetCardFinalCost() <= lessThanOrEqualToThisCost)
+                if ((UnityEngine.Object)cardData != (UnityEngine.Object)null && cardData.GetCardFinalCost() > 0 && (cardData.GetCardTypes().Contains(cardType) || cardType == Enums.CardType.None) && cardData.GetCardFinalCost() >= equalOrAboveCertainCost && cardData.GetCardFinalCost() <= lessThanOrEqualToThisCost)
                     cardDataList.Add(cardData);
             }
             return cardDataList;

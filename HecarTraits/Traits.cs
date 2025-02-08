@@ -62,12 +62,7 @@ namespace Hecar
                 string traitId = _trait;
                 LogDebug($"Handling Trait {traitId}: {traitName}");
                 // When this hero would overheal a character, apply Shield equal to 50% of the amount overhealed (Benefits 50% from Shield bonuses). Suffer 20% of the amount as Shielded as Insane.
-                if (CanIncrementTraitActivations(_trait))
-                {
-                    IncrementTraitActivations(_trait);
-                    DisplayRemainingChargesForTrait(ref _character, traitData);
-
-                }
+                // Done in HealReceivedFinalPrefix
             }
 
 
@@ -79,12 +74,12 @@ namespace Hecar
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
                 LogDebug($"Handling Trait {traitId}: {traitName}");
-                DisplayTraitScroll(ref _character, traitData);
 
-                if(_character!=null&&_target!=null&&_character.Alive&&_target.Alive)
+                if (IsLivingHero(_character) && _target != null && _target.Alive)
                 {
-                    _character.SetAuraTrait(_character,"scourge",2);
-                    _target.SetAuraTrait(_character,"scourge",2);
+                    _character.SetAuraTrait(_character, "scourge", 2);
+                    _target.SetAuraTrait(_character, "scourge", 2);
+                    DisplayTraitScroll(ref _character, traitData);
                 }
 
             }
@@ -96,27 +91,31 @@ namespace Hecar
                 string traitName = traitData.TraitName;
                 string traitId = _trait;
                 LogDebug($"Handling Trait {traitId}: {traitName}");
-                DisplayTraitScroll(ref _character, traitData);
-                // Insane on this hero increases Shield charges by 1 per 20 insane.
-                // If this character has more than 40 insane, when they cast a spell, reduce insane by 25%. Decrease the cost of their highest cost card by 1 for every 10 Insane removed (2x per turn).
-                if(!IsLivingHero(_character)||_character.GetAuraCharges("insane")<40)
+                // Insane on this hero increases Shield charges by 1 per 10 insane.
+                // If this character has at least 20 Insane, when they cast a Spell, Reduce Insane by 25%. For every 5 Insane removed, reduce the cost of their highest cost card by 1 until discarded.
+                if (!IsLivingHero(_character) || _character.GetAuraCharges("insane") < 20)
                 {
                     return;
                 }
 
                 int bonusActivations = _character.HaveTrait(trait4a) ? 1 : 0;
-                if(CanIncrementTraitActivations(traitId))
-                {                    
+                if (CanIncrementTraitActivations(traitId, bonusActivations))
+                {
                     AuraCurseData insane = GetAuraCurseData("insane");
                     int nInsane = _character.GetAuraCharges("insane");
-                    int insaneToApply = Mathf.RoundToInt(nInsane*0.75f);
-                    int amountToReduce = Mathf.FloorToInt(nInsane*0.025f);
+                    int insaneToApply = Mathf.RoundToInt(nInsane * 0.75f);
                     _character.HealAuraCurse(insane);
-                    _character.SetAura(_character,insane,insaneToApply);
+                    _character.SetAura(_character, insane, insaneToApply);
+
+                    int amountToReduce = Mathf.FloorToInt(nInsane * 0.25f * 0.2f);
+                    CardData highestCostCard = GetRandomHighestCostCard(Enums.CardType.None, heroHand);
+                    ReduceCardCost(ref highestCostCard, _character, amountToReduce);
+
                     IncrementTraitActivations(traitId);
-                
+                    DisplayTraitScroll(ref _character, traitData);
+
                 }
-                
+
 
             }
 
@@ -174,6 +173,7 @@ namespace Hecar
             switch (_acId)
             {
                 // 2a: Scourge on this hero increases Damage and Healing by 10% per charge.
+                // 4a: Scourge on all characters can stack. 
                 // 4a: Scourge on enemies reduces damage done by 5% per charge (caps at 50%). 
                 // 4b: Insane on this hero increases mind damage and healing by 2% per charge.
                 // 4b: Crack on enemies decreases mind resistance by 1% per charge.
@@ -192,6 +192,10 @@ namespace Hecar
                     {
                         __result.AuraDamageType3 = Enums.DamageType.All;
                         __result.AuraDamageIncreasedPercentPerStack3 = -5.0f;
+                    }
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Global))
+                    {
+                        __result.GainCharges = true;
                     }
                     break;
 
@@ -240,8 +244,8 @@ namespace Hecar
             if (__result >= 0 && activeHero.HaveTrait(trait0) && IsLivingHero(__instance) && IsLivingHero(activeHero) && heal > 0 && !isIndirect)
             {
                 int amountOverhealed = __result - __instance.GetHpLeftForMax();
-                if (amountOverhealed<=0) {return;}            
-                int amountToShield = Mathf.RoundToInt((amountOverhealed + activeHero.AuraCurseModification["shield"])*0.5f);
+                if (amountOverhealed <= 0) { return; }
+                int amountToShield = Mathf.RoundToInt((amountOverhealed + activeHero.AuraCurseModification["shield"]) * 0.5f);
                 __instance.SetAura(__instance, GetAuraCurseData("shield"), amountToShield, useCharacterMods: false);
             }
         }
@@ -263,8 +267,34 @@ namespace Hecar
         [HarmonyPatch(typeof(Character), nameof(Character.BeginTurn))]
         public static void BeginTurnPrefix(ref Character __instance)
         {
- 
+
             infiniteProctection = 0;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Character), nameof(Character.GetTraitAuraCurseModifiers))]
+        public static void GetTraitAuraCurseModifiersPostfix(ref Character __instance, ref Dictionary<string, int> __result)
+        {
+            LogDebug("GetTraitAuraCurseModifiersPostfix");
+            string traitOfInterest = trait4a;
+            if (!IsLivingHero(__instance) || !__instance.HaveTrait(traitOfInterest))
+            {
+                return;
+            }
+
+            int nInsane = __instance.GetAuraCharges("insane");
+            int nToIncrease = Mathf.FloorToInt(nInsane * 0.1f);
+            if (nToIncrease <= 0)
+            {
+                return;
+            }
+            if (!__result.ContainsKey("shield"))
+            {
+                __result["shield"] = 0;
+            }
+            __result["shield"] += nToIncrease;
+
+
         }
 
     }
