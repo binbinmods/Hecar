@@ -93,28 +93,34 @@ namespace Hecar
                 LogDebug($"Handling Trait {traitId}: {traitName}");
                 // Insane on this hero increases Shield charges by 1 per 10 insane.
                 // If this character has at least 20 Insane, when they cast a Spell, Reduce Insane by 25%. For every 5 Insane removed, reduce the cost of their highest cost card by 1 until discarded.
-                if (!IsLivingHero(_character) || _character.GetAuraCharges("insane") < 20)
+                if (!IsLivingHero(_character))// || _character.GetAuraCharges("insane") < 20)
                 {
                     return;
                 }
-
-                int bonusActivations = _character.HaveTrait(trait4a) ? 1 : 0;
-                if (CanIncrementTraitActivations(traitId, bonusActivations))
+                int nInsane = _character.GetAuraCharges("insane");
+                int iterations = Mathf.FloorToInt(nInsane * 0.10f) + 1;
+                for (int i = 0; i < iterations; i++)
                 {
-                    AuraCurseData insane = GetAuraCurseData("insane");
-                    int nInsane = _character.GetAuraCharges("insane");
-                    int insaneToApply = Mathf.RoundToInt(nInsane * 0.75f);
-                    _character.HealAuraCurse(insane);
-                    _character.SetAura(_character, insane, insaneToApply);
-
-                    int amountToReduce = Mathf.FloorToInt(nInsane * 0.25f * 0.2f);
-                    CardData highestCostCard = GetRandomHighestCostCard(Enums.CardType.None, heroHand);
-                    ReduceCardCost(ref highestCostCard, _character, amountToReduce);
-
-                    IncrementTraitActivations(traitId);
-                    DisplayTraitScroll(ref _character, traitData);
-
+                    CardData highestCostCard = GetRandomHighestCostCard(Enums.CardType.Spell, heroHand);
+                    ReduceCardCost(ref highestCostCard, _character, 1);
                 }
+                // int bonusActivations = _character.HaveTrait(trait4a) ? 1 : 0;
+                // if (CanIncrementTraitActivations(traitId, bonusActivations))
+                // {
+                //     AuraCurseData insane = GetAuraCurseData("insane");
+                //     int nInsane = _character.GetAuraCharges("insane");
+                //     int insaneToApply = Mathf.RoundToInt(nInsane * 0.75f);
+                //     _character.HealAuraCurse(insane);
+                //     _character.SetAura(_character, insane, insaneToApply);
+
+                //     int amountToReduce = Mathf.FloorToInt(nInsane * 0.25f * 0.2f);
+                //     CardData highestCostCard = GetRandomHighestCostCard(Enums.CardType.None, heroHand);
+                //     ReduceCardCost(ref highestCostCard, _character, amountToReduce);
+
+                //     IncrementTraitActivations(traitId);
+                //     DisplayTraitScroll(ref _character, traitData);
+
+                // }
 
 
             }
@@ -172,6 +178,7 @@ namespace Hecar
 
             switch (_acId)
             {
+                // 0: 
                 // 2a: Scourge on this hero increases Damage and Healing by 10% per charge.
                 // 4a: Scourge on all characters can stack. 
                 // 4a: Scourge on enemies reduces damage done by 5% per charge (caps at 50%). 
@@ -203,18 +210,26 @@ namespace Hecar
                     traitOfInterest = trait4b;
                     if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Monsters))
                     {
-                        __result = __instance.GlobalAuraCurseModifyResist(__result, Enums.DamageType.Mind, 0, 1.0f);
+                        __result = __instance.GlobalAuraCurseModifyResist(__result, Enums.DamageType.Mind, 0, -1.0f);
                     }
                     break;
 
-                case "mind":
+                case "insane":
+                    traitOfInterest = trait0;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
+                    {
+                        // __result.AuraDamageType3 = Enums.DamageType.Mind;
+                        // __result.AuraDamageIncreasedPercentPerStack3 = 2.0f;
+                        __result.HealDonePercentPerStack = 1;
+                        __result.MaxCharges = 200;
+                        __result.MaxMadnessCharges = 200;
+                    }
+
                     traitOfInterest = trait4b;
                     if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
                     {
                         __result.AuraDamageType3 = Enums.DamageType.Mind;
                         __result.AuraDamageIncreasedPercentPerStack3 = 2.0f;
-                        __result.HealDonePercentPerStack = 2;
-
                     }
                     break;
             }
@@ -282,17 +297,17 @@ namespace Hecar
                 return;
             }
 
-            int nInsane = __instance.GetAuraCharges("insane");
-            int nToIncrease = Mathf.FloorToInt(nInsane * 0.1f);
-            if (nToIncrease <= 0)
-            {
-                return;
-            }
-            if (!__result.ContainsKey("shield"))
-            {
-                __result["shield"] = 0;
-            }
-            __result["shield"] += nToIncrease;
+            // int nInsane = __instance.GetAuraCharges("insane");
+            // int nToIncrease = Mathf.FloorToInt(nInsane * 0.1f);
+            // if (nToIncrease <= 0)
+            // {
+            //     return;
+            // }
+            // if (!__result.ContainsKey("shield"))
+            // {
+            //     __result["shield"] = 0;
+            // }
+            // __result["shield"] += nToIncrease;
 
 
         }
