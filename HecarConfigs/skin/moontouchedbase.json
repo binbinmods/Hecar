@@ -1,0 +1,15 @@
+{
+    "BaseSkin": true,
+    "PerkLevel": 0,
+    "SkinGO": "skinhecar",
+    "SkinID": "moontouchedbase",
+    "SkinName": "Default",
+    "SkinOrder": 0,
+    "SkinSubclass": "moontouched",
+    "Sku": "",
+    "SpritePortrait": "hecarPortrait",
+    "SpritePortraitGrande": "hecarPortraitGrande",
+    "SpriteSilueta": "hecarSilueta",
+    "SpriteSiluetaGrande": "hecarSiluetaGrande",
+    "SteamStat": ""
+}
