@@ -1,3 +1,7 @@
+# 0.3.0
+
+Bug fixes for traits
+
 # 0.2.0
 
 Reworked all traits and enchantments

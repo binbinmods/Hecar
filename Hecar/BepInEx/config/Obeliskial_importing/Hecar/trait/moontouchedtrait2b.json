@@ -23,7 +23,7 @@
     "DamageBonusPercentValue": 0.0,
     "DamageBonusPercentValue2": 0.0,
     "DamageBonusPercentValue3": 0.0,
-    "Description": "At the start of your turn, half your Insane. Then, reduce your highest cost card by 1, repeat for every 10 Insane on you.",
+    "Description": "At the start of your turn, reduce your highest cost card by 1 until discarded. Repeat for every 20 Insane on you. Then, half your Insane.",
     "HealFlatBonus": 0,
     "HealPercentBonus": 0.0,
     "HealReceivedFlatBonus": 0,
