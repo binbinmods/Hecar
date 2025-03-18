@@ -1,3 +1,7 @@
-# 1.0.0
+# 0.2.0
 
-Initial release.
+Reworked all traits and enchantments
+
+# 0.1.0
+
+Initial concept.

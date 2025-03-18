@@ -1,0 +1,15 @@
+{
+    "Card0": "mentalshell",
+    "Card1": "barrier",
+    "Card2": "moontouchedanguish",
+    "Card3": "bindingheal",
+    "Card4": "pandemonium",
+    "Card5": "",
+    "CardSpecial0": "",
+    "CardSpecial1": "",
+    "PackClass": "healer",
+    "PackID": "hecar",
+    "PackName": "Hecar",
+    "PerkList": [],
+    "RequiredClass": "moontouched"
+}
