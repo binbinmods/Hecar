@@ -6,6 +6,7 @@ This currently does not include any events or quests related to Hecar. This will
 
 Known Issues:
 - The custom descriptions for Crack Heads and Waning Blessing do not appear when the cards are in your hand. Their effects still apply, and appear in the tome/after you have played them, but not in your hand. This is a visual bug only.
+- The reduction by 50% on Starlit Scourge is janky. Will fix this at some later point
 
 A couple of notes:
 ## Notes:

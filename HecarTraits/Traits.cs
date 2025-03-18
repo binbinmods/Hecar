@@ -24,6 +24,7 @@ namespace Hecar
         public static string[] myTraitList = simpleTraitList.Select(trait => subclassname + trait).ToArray(); // Needs testing
 
         static string trait0 = myTraitList[0];
+        static string trait1b = myTraitList[1];
         static string trait2a = myTraitList[3];
         static string trait2b = myTraitList[4];
         static string trait4a = myTraitList[7];
@@ -200,9 +201,11 @@ namespace Hecar
                     }
 
                     traitOfInterest = trait4a;
-                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Monsters))
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Global))
                     {
                         __result.GainCharges = true;
+                        __result.AuraConsumed = 0;
+                        __result.ConsumeAll = false;
                     }
                     break;
 
@@ -270,57 +273,116 @@ namespace Hecar
             }
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(MatchManager), "ConsumeAuraCurseCo")]
-        public static void ConsumeAuraCursePrefix(
-            MatchManager __instance,
-            string whenToConsume,
-            Character character,
-            out int __state,
-            string auraToConsume = "")            
-        {
-            LogDebug($"ConsumeAuraCursePrefix consuming at: {whenToConsume}");
-            string traitOfInterest = trait4a;
-            if(!AtOManager.Instance.TeamHaveTrait(traitOfInterest) || character == null || character.GetAuraCharges("scourge") <= 0)
-            {
-                LogDebug($"ConsumeAuraCursePrefix - Character = {character?.SourceName ?? ""}, Trait = {AtOManager.Instance.TeamHavePerk(traitOfInterest)}, Scourge = {character?.GetAuraCharges("scourge") ?? 0}");
-                __state = 0;
-                return;
-            }
-            LogDebug("ConsumeAuraCursePrefix - Has Trait and Scourge");
-            AuraCurseData scourge = GetAuraCurseData("scourge");
-            if((whenToConsume == "BeginTurn" && scourge.ConsumedAtTurnBegin) || (whenToConsume == "EndTurn" && scourge.ConsumedAtTurn) || auraToConsume == "scourge")
-            {
-                __state = Mathf.FloorToInt(character.GetAuraCharges("scourge") * 0.5f);
-            }
-            else
-            {
-                // LogDebug("ConsumeAuraCursePrefix - Has Trait and Scourge, but not proper Alignment");
-                __state = 0;
-            }            
-        }
+        // [HarmonyPrefix]
+        // [HarmonyPatch(typeof(MatchManager), "ConsumeAuraCurseCo")]
+        // public static void ConsumeAuraCursePrefix(
+        //     MatchManager __instance,
+        //     string whenToConsume,
+        //     Character character,
+        //     out int __state,
+        //     string auraToConsume = "")            
+        // {
+        //     LogDebug($"ConsumeAuraCursePrefix consuming at: {whenToConsume}");
+        //     string traitOfInterest = trait4a;
+        //     if(!AtOManager.Instance.TeamHaveTrait(traitOfInterest) || character == null || character.GetAuraCharges("scourge") <= 0)
+        //     {
+        //         LogDebug($"ConsumeAuraCursePrefix - Character = {character?.SourceName ?? ""}, Trait = {AtOManager.Instance.TeamHavePerk(traitOfInterest)}, Scourge = {character?.GetAuraCharges("scourge") ?? 0}");
+        //         __state = 0;
+        //         return;
+        //     }
+        //     LogDebug("ConsumeAuraCursePrefix - Has Trait and Scourge");
+        //     AuraCurseData scourge = GetAuraCurseData("scourge");
+        //     if((whenToConsume == "BeginTurn" && scourge.ConsumedAtTurnBegin) || (whenToConsume == "EndTurn" && scourge.ConsumedAtTurn) || auraToConsume == "scourge")
+        //     {
+        //         __state = Mathf.FloorToInt(character.GetAuraCharges("scourge") * 0.5f);
+        //     }
+        //     else
+        //     {
+        //         // LogDebug("ConsumeAuraCursePrefix - Has Trait and Scourge, but not proper Alignment");
+        //         __state = 0;
+        //     }            
+        // }
+
+        // [HarmonyPostfix]
+        // [HarmonyPatch(typeof(MatchManager), "ConsumeAuraCurseCo")]
+        // public static void ConsumeAuraCursePostFix(
+        //     MatchManager __instance,
+        //     string whenToConsume,
+        //     Character character,
+        //     int __state,
+        //     string auraToConsume = "")
+        // {
+        //     LogDebug($"ConsumeAuraCursePostfix - Applying {__state} Scourge");
+        //     if (__state > 0 && character != null && character.Alive)
+        //     {            
+        //         Globals.Instance.WaitForSeconds(0.1f);
+        //         character.SetAura(character, GetAuraCurseData("scourge"), __state, useCharacterMods: false, canBePreventable: false);
+        //         LogDebug($"ConsumeAuraCursePostfix - Applied {__state} Scourge");
+        //     }
+        // }
+
+
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(MatchManager), "ConsumeAuraCurseCo")]
-        public static void ConsumeAuraCursePostFix(
-            MatchManager __instance,
-            string whenToConsume,
-            Character character,
-            int __state,
-            string auraToConsume = "")
+        [HarmonyPatch(typeof(Character), "EndTurn")]
+        public static void EndTurnPostfix(
+            ref Character __instance,
+            int __state)
         {
-            LogDebug($"ConsumeAuraCursePostfix - Applying {__state} Scourge");
-            if (__state > 0 && character != null && character.Alive)
-            {            
-                Globals.Instance.WaitForSeconds(0.1f);
-                character.SetAura(character, GetAuraCurseData("scourge"), __state, useCharacterMods: false, canBePreventable: false);
-                LogDebug($"ConsumeAuraCursePostfix - Applied {__state} Scourge");
+            // string whenToConsume = "EndTurn";
+            // Character character = __instance;
+            // LogDebug($"EndTurnPostfix - Applying {__state} Scourge");
+            // if (__state > 0 && character != null && character.Alive)
+            // {            
+            //     Globals.Instance.WaitForSeconds(0.5f);
+            //     character.SetAura(character, GetAuraCurseData("scourge"), __state, useCharacterMods: false, canBePreventable: false);
+            //     LogDebug($"EndTurnPostfix - Applied {__state} Scourge");
+            // }
+            AuraCurseData scourge = GetAuraCurseData("scourge");
+            bool hasWaning = IsLivingHero(__instance) && (AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1b") ||AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1ba") ||AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1bb") );
+            LogDebug($"EndTurnPostfix - Character {__instance.SourceName} Has Waning Blessing: {hasWaning}");
+            if (hasWaning && __instance != null && __instance.Alive && __instance.GetAuraCharges("scourge") > 0)
+            {
+
+                int nToApply = Mathf.RoundToInt(__instance.GetAuraCharges("scourge") * 0.5f);
+                LogDebug($"EndTurnPostfix - Character {__instance.SourceName} Has {Mathf.RoundToInt(__instance.GetAuraCharges("scourge"))} Scourge, Applying {nToApply} Scourge");
+                __instance.HealAuraCurse(scourge);
+                __instance.SetAura(__instance, scourge, nToApply, useCharacterMods: false, canBePreventable: false);
+
             }
         }
 
 
 
-        
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Character), "BeginTurn")]
+        public static void BeginTurnPostFix2(
+            ref Character __instance,
+            int __state)
+        {
+            // string whenToConsume = "EndTurn";
+            // Character character = __instance;
+            // LogDebug($"BeginTurnPostfix - Applying {__state} Scourge");
+            // if (__state > 0 && character != null && character.Alive)
+            // {            
+            //     // Globals.Instance.WaitForSeconds(1.5f);
+            //     character.SetAura(character, GetAuraCurseData("scourge"), __state, useCharacterMods: false, canBePreventable: false);
+            //     LogDebug($"BeginTurnPostfix - Applied {__state} Scourge");
+            // }
+            AuraCurseData scourge = GetAuraCurseData("scourge");
+            bool hasWaning = IsLivingHero(__instance) && (AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1b") ||AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1ba") ||AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1bb") );
+            if (!hasWaning && __instance != null && __instance.Alive && __instance.GetAuraCharges("scourge") > 0)
+            {
+                int nToApply = Mathf.RoundToInt(__instance.GetAuraCharges("scourge") * 0.5f);
+                LogDebug($"BeginTurnPostfix - Character {__instance.SourceName} Has {Mathf.RoundToInt(__instance.GetAuraCharges("scourge"))} Scourge, Applying {nToApply} Scourge");
+                __instance.HealAuraCurse(scourge);
+                __instance.SetAura(__instance, scourge, nToApply, useCharacterMods: false, canBePreventable: false);
+            }
+        }
+
+
+
+
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(MatchManager), nameof(MatchManager.SetDamagePreview))]
