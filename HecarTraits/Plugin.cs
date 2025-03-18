@@ -33,7 +33,7 @@ namespace Hecar
             Log = Logger;
             Log.LogInfo($"{PluginInfo.PLUGIN_GUID} {PluginInfo.PLUGIN_VERSION} has loaded!");
 
-            EnableDebugging = Config.Bind(new ConfigDefinition(subclassName, "Enable Debugging"), true, new ConfigDescription("Enables debugging logs."));
+            EnableDebugging = Config.Bind(new ConfigDefinition(characterName, "Enable Debugging"), true, new ConfigDescription("Enables debugging logs."));
 
             // register with Obeliskial Essentials
             RegisterMod(
@@ -54,7 +54,8 @@ namespace Hecar
 
         internal static void LogDebug(string msg)
         {
-            Log.LogDebug(debugBase + msg);
+            if(EnableDebugging.Value)
+                Log.LogDebug(debugBase + msg);
         }
         internal static void LogInfo(string msg)
         {

@@ -240,10 +240,11 @@ namespace Hecar
         }
 
 
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(Character), nameof(Character.HealReceivedFinal))]
-        public static void HealReceivedFinalPrefix(Character __instance, int __result, int heal, bool isIndirect = false)
+        public static void HealReceivedFinalPostfix(Character __instance, int __result, int heal, bool isIndirect = false)
         {
+            LogDebug("HealReceivedFinalPostfix");
             if (infiniteProctection > 100)
                 return;
             if (isDamagePreviewActive || isCalculateDamageActive)
@@ -257,54 +258,69 @@ namespace Hecar
 
             // MatchManager.Instance.cast
             Hero activeHero = MatchManager.Instance.GetHeroHeroActive();
-            PLog("Inf " + infiniteProctection);
-            PLog("Active Hero: " + activeHero.SubclassName);
-            PLog("Targeted/Instanced Hero: " + __instance.SubclassName);
-            if (__result >= 0 && activeHero.HaveTrait(trait0) && IsLivingHero(__instance) && IsLivingHero(activeHero) && heal > 0 && !isIndirect)
+            LogDebug("Inf " + infiniteProctection);
+            LogDebug("Active Hero: " + activeHero.SubclassName);
+            LogDebug("Targeted/Instanced Hero: " + __instance.SubclassName);
+            if (__result >= 0 && activeHero.HaveTrait(trait0) && IsLivingHero(__instance) && IsLivingHero(activeHero))
             {
                 int amountOverhealed = __result - __instance.GetHpLeftForMax();
                 if (amountOverhealed <= 0) { return; }
                 int amountToShield = Mathf.RoundToInt((amountOverhealed + activeHero.AuraCurseModification["shield"]) * 0.5f);
-                __instance.SetAura(__instance, GetAuraCurseData("shield"), amountToShield, useCharacterMods: false);
+                __instance.SetAura(activeHero, GetAuraCurseData("shield"), amountToShield, useCharacterMods: false);
             }
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(MatchManager), "ConsumeAuraCurseCo")]
-        public static void ConsumeAuraCurseCoPrefix(
+        public static void ConsumeAuraCursePrefix(
             MatchManager __instance,
             string whenToConsume,
             Character character,
             out int __state,
-            string auraToConsume = "")
+            string auraToConsume = "")            
         {
+            LogDebug($"ConsumeAuraCursePrefix consuming at: {whenToConsume}");
             string traitOfInterest = trait4a;
-            if (auraToConsume == "scourge" && AtOManager.Instance.TeamHavePerk(traitOfInterest) && character != null)
+            if(!AtOManager.Instance.TeamHaveTrait(traitOfInterest) || character == null || character.GetAuraCharges("scourge") <= 0)
             {
-                __state = Mathf.RoundToInt(character.GetAuraCharges("scourge") * 0.5f);
+                LogDebug($"ConsumeAuraCursePrefix - Character = {character?.SourceName ?? ""}, Trait = {AtOManager.Instance.TeamHavePerk(traitOfInterest)}, Scourge = {character?.GetAuraCharges("scourge") ?? 0}");
+                __state = 0;
+                return;
+            }
+            LogDebug("ConsumeAuraCursePrefix - Has Trait and Scourge");
+            AuraCurseData scourge = GetAuraCurseData("scourge");
+            if((whenToConsume == "BeginTurn" && scourge.ConsumedAtTurnBegin) || (whenToConsume == "EndTurn" && scourge.ConsumedAtTurn) || auraToConsume == "scourge")
+            {
+                __state = Mathf.FloorToInt(character.GetAuraCharges("scourge") * 0.5f);
             }
             else
             {
+                // LogDebug("ConsumeAuraCursePrefix - Has Trait and Scourge, but not proper Alignment");
                 __state = 0;
-            }
-
-
+            }            
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(MatchManager), "ConsumeAuraCurseCo")]
-        public static void ConsumeAuraCurseCoPostfix(
+        public static void ConsumeAuraCursePostFix(
             MatchManager __instance,
             string whenToConsume,
             Character character,
             int __state,
             string auraToConsume = "")
         {
-            if (__state != 0 && character != null && character.GetAuraCharges("scourge") != 0)
-            {
+            LogDebug($"ConsumeAuraCursePostfix - Applying {__state} Scourge");
+            if (__state > 0 && character != null && character.Alive)
+            {            
+                Globals.Instance.WaitForSeconds(0.1f);
                 character.SetAura(character, GetAuraCurseData("scourge"), __state, useCharacterMods: false, canBePreventable: false);
+                LogDebug($"ConsumeAuraCursePostfix - Applied {__state} Scourge");
             }
         }
+
+
+
+        
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(MatchManager), nameof(MatchManager.SetDamagePreview))]
@@ -386,6 +402,12 @@ namespace Hecar
                 stringBuilder1.Insert(0, crackHeadsText);
             }
 
+            if (__instance.Id == "flashheal" || __instance.Id == "flashheala" || __instance.Id == "flashhealb")
+            {
+                string textToAdd = $"Testing\n";
+                stringBuilder1.Insert(0, textToAdd);
+            }
+
             BinbinNormalizeDescription(ref __instance, stringBuilder1);
         }
 
@@ -403,6 +425,7 @@ namespace Hecar
             descriptionNormalized = Regex.Replace(descriptionNormalized, "<br>\\w", (MatchEvaluator)(m => m.ToString().ToUpper()));
             Globals.Instance.CardsDescriptionNormalized[__instance.Id] = stringBuilder.ToString();
             __instance.DescriptionNormalized = descriptionNormalized;
+            Traverse.Create(__instance).Field("description").SetValue(descriptionNormalized);
             Traverse.Create(__instance).Field("descriptionNormalized").SetValue(descriptionNormalized);
         }
 

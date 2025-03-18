@@ -1,8 +1,11 @@
 # Hecar, the Moontouched
 
-A hero mod, introducing Hecar, a Shaman imprisoned by Gorio. 
+A hero mod, introducing Hecar, a Moontouched Healer whose mind has been shattered when looking for the light. Instead, he found something else.
 
-This currently does not include any events or quests related to Hecar. This will be updated in the future with a future mod release, it will include a sub-zone or three and a few quests. 
+This currently does not include any events or quests related to Hecar. This will be updated in the future with a future mod release. 
+
+Known Issues:
+- The custom descriptions for Crack Heads and Waning Blessing do not appear when the cards are in your hand. Their effects still apply, and appear in the tome/after you have played them, but not in your hand. This is a visual bug only.
 
 A couple of notes:
 ## Notes:
@@ -16,33 +19,6 @@ This mod relies on [Obeliskial Content](https://across-the-obelisk.thunderstore.
 <details>
 <summary>Traits</summary>
 
-### Level 1
-- Wisdom of The Ancients: Burn, Chill, and Spark Charges on enemies additionally apply -0.2% resistance to Holy Damage per charge. At the end of your turn, all heroes heal for 12% of the Burn Charges, Chill Charges, and Shock Charges in play. -This heal does not gain bonuses-
-
-
-### Level 2
-
-![Augur's Wrath](/Storm_Channeler.png)
-
-![Augur's Blessing](/Waters_of_Life.png)
-
-### Level 3
-
-- Magus Duality: When you play a Mage Card, reduce the cost of the highest cost Healer Card in your hand by 1 until discarded. When you play a Healer Card, reduce the cost of the highest cost Mage Card in your hand by 1 until discarded. (3 times / per turn)
-- Animist Energy: At the start of your turn, Dispel 3 targeting yourself, and reduce the cost of the highest cost card in your hand by 2 until discarded.
-
-### Level 4
-
-![Elemental Focus](./Electric_Current.png)
-
-![Bountiful Restoration](../Tears_of_the_Spririts.png)
-
-### Level 5
-
-- Yggdrasil's Fury: Sanctify +1. All Damage done +20%. When you play a "Spell" card, Dispel 1 targeting yourself. (4 times / per turn).
-- Grove Warden's Mercy: Regeneration +1. When you play a "Healing Spell" card, Apply 2 Mitigate Charges to All Heroes. (2 times / per turn)
-
-</details>
 
 
 ## Installation (manual)
@@ -63,7 +39,7 @@ This mod relies on [Obeliskial Content](https://across-the-obelisk.thunderstore.
 
 ## Support
 
-This has been updated for version 1.4.
+This has been updated for Across the Obelisk version 1.5.
 
 Hope you enjoy it and if have any issues, ping me in Discord or make a post in the **modding #support-and-requests** channel of the [official Across the Obelisk Discord](https://discord.gg/across-the-obelisk-679706811108163701).
 

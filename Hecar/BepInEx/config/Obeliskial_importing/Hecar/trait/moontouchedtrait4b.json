@@ -23,7 +23,7 @@
     "DamageBonusPercentValue": 0.0,
     "DamageBonusPercentValue2": 0.0,
     "DamageBonusPercentValue3": 0.0,
-    "Description": "Insane on you increases mind damage by 3% per charge. When you play a card, suffer 2 Insane.",
+    "Description": "Insane on you increases mind damage by 3% per charge. When you play a card, suffer 3 Insane. (5x/turn)",
     "HealFlatBonus": 0,
     "HealPercentBonus": 0.0,
     "HealReceivedFlatBonus": 0,
