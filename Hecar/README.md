@@ -4,6 +4,8 @@ A hero mod, introducing Hecar, a Moontouched Healer whose mind has been shattere
 
 This currently does not include any events or quests related to Hecar. This will be updated in the future with a future mod release. 
 
+A huge thanks to @Cixhelfox for the artwork!
+
 Known Issues:
 - The custom descriptions for Crack Heads and Waning Blessing do not appear when the cards are in your hand. Their effects still apply, and appear in the tome/after you have played them, but not in your hand. This is a visual bug only.
 - The reduction by 50% on Starlit Scourge is janky. Will fix this at some later point
@@ -17,8 +19,9 @@ A couple of notes:
 
 This mod relies on [Obeliskial Content](https://across-the-obelisk.thunderstore.io/package/meds/Obeliskial_Content/).
 
-<details>
-<summary>Traits</summary>
+## Traits
+
+![Hecar Info](https://raw.githubusercontent.com/binbinmods/Hecar/refs/heads/main/Assets/hecar2.png)
 
 
 

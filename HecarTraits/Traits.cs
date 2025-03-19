@@ -464,11 +464,11 @@ namespace Hecar
                 stringBuilder1.Insert(0, crackHeadsText);
             }
 
-            if (__instance.Id == "flashheal" || __instance.Id == "flashheala" || __instance.Id == "flashhealb")
-            {
-                string textToAdd = $"Testing\n";
-                stringBuilder1.Insert(0, textToAdd);
-            }
+            // if (__instance.Id == "flashheal" || __instance.Id == "flashheala" || __instance.Id == "flashhealb")
+            // {
+            //     string textToAdd = $"Testing\n";
+            //     stringBuilder1.Insert(0, textToAdd);
+            // }
 
             BinbinNormalizeDescription(ref __instance, stringBuilder1);
         }

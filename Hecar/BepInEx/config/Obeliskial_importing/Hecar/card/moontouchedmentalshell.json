@@ -16,7 +16,7 @@
     "UpgradesTo1": "moontouchedmentalshella",
     "UpgradesTo2": "moontouchedmentalshellb",
     "UpgradesToRare": "",
-    "CardClass": "Healer",
+    "CardClass": "Special",
     "CardType": "Mind_Spell",
     "CardTypeAux": [
         "Spell"

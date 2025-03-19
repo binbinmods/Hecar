@@ -1,3 +1,13 @@
+# 0.5.2
+
+Updated text description on Shattered Soul
+
+# 0.5.1
+
+Removed the Testing text from Flash Heal
+
+Reflection is no longer craftable   
+
 # 0.5.0
 
 Initial pre-release
