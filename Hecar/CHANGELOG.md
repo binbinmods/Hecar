@@ -2,6 +2,10 @@
 
 Updated text description on Shattered Soul
 
+Fixed an issue with regen procing Overheal every frame
+
+Fixed an issue with Eclipse Shield not improving Shield/Block until level 5.
+
 # 0.5.1
 
 Removed the Testing text from Flash Heal

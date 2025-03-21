@@ -268,7 +268,8 @@ namespace Hecar
             {
                 int amountOverhealed = __result - __instance.GetHpLeftForMax();
                 if (amountOverhealed <= 0) { return; }
-                int amountToShield = Mathf.RoundToInt((amountOverhealed + activeHero.AuraCurseModification["shield"]) * 0.5f);
+                int shieldModifiers = activeHero.AuraCurseModification.ContainsKey("shield") ? activeHero.AuraCurseModification["shield"] : 0;
+                int amountToShield = Mathf.RoundToInt((amountOverhealed + shieldModifiers) * 0.5f);
                 __instance.SetAura(activeHero, GetAuraCurseData("shield"), amountToShield, useCharacterMods: false);
             }
         }
@@ -382,6 +383,18 @@ namespace Hecar
 
 
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(CharacterItem), nameof(CharacterItem.CalculateDamagePrePostForThisCharacter))]
+        public static void CalculateDamagePrePostForThisCharacterPrefix()
+        {
+            isDamagePreviewActive = true;
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CharacterItem), nameof(CharacterItem.CalculateDamagePrePostForThisCharacter))]
+        public static void CalculateDamagePrePostForThisCharacterPostfix()
+        {
+            isDamagePreviewActive = false;
+        }
 
 
         [HarmonyPrefix]
@@ -410,14 +423,14 @@ namespace Hecar
         public static void GetTraitAuraCurseModifiersPostfix(ref Character __instance, ref Dictionary<string, int> __result)
         {
             LogDebug("GetTraitAuraCurseModifiersPostfix");
-            string traitOfInterest = trait4a;
+            string traitOfInterest = trait2a;
             if (!IsLivingHero(__instance) || !__instance.HaveTrait(traitOfInterest))
             {
                 return;
             }
 
             // int nInsane = __instance.GetAuraCharges("insane");
-            int nToIncrease = __instance.GetAuraCharges("insane");
+            int nToIncrease = __instance.GetAuraCharges("scourge");
             // int nToIncrease = Mathf.FloorToInt(nInsane * 0.1f);
             if (nToIncrease <= 0)
             {
