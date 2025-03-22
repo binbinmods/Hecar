@@ -1,3 +1,7 @@
+# 0.5.3
+
+Fixed a bug where the bonus Shield/Block from Scourge would continually increase.
+
 # 0.5.2
 
 Updated text description on Shattered Soul

@@ -436,17 +436,8 @@ namespace Hecar
             {
                 return;
             }
-            if (!__result.ContainsKey("shield"))
-            {
-                __result["shield"] = 0;
-            }
-            __result["shield"] += nToIncrease;
-
-            if (!__result.ContainsKey("block"))
-            {
-                __result["block"] = 0;
-            }
-            __result["block"] += nToIncrease;
+            __result["shield"] = nToIncrease;
+            __result["block"] = nToIncrease;
         }
 
         [HarmonyPostfix]
