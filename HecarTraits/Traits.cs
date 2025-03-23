@@ -325,6 +325,7 @@ namespace Hecar
 
 
         [HarmonyPostfix]
+        [HarmonyPriority(Priority.Last)]
         [HarmonyPatch(typeof(Character), "EndTurn")]
         public static void EndTurnPostfix(
             ref Character __instance,

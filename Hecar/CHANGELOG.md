@@ -1,3 +1,9 @@
+# 0.5.4
+
+Waning blessing activates at the start of round rather than turn (text might not update appropriately unless Balance Patch is active. This will be fixed with the next version of Obeliskial Essentials)
+
+Fixed compatibility issue with Starlit Scourge and Too Many Perks
+
 # 0.5.3
 
 Fixed a bug where the bonus Shield/Block from Scourge would continually increase.
