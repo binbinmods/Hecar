@@ -2,16 +2,19 @@
 
 A hero mod, introducing Hecar, a Moontouched Healer whose mind has been shattered when looking for the light. Instead, he found something else.
 
-This currently does not include any events or quests related to Hecar. This will be updated in the future with a future mod release. 
+This currently does not include any events or quests related to Hecar. This will be updated in the future with a future mod release.
 
 A huge thanks to @Cixhelfox for the artwork!
 
 Known Issues:
+
 - The custom descriptions for Crack Heads and Waning Blessing do not appear when the cards are in your hand. Their effects still apply, and appear in the tome/after you have played them, but not in your hand. This is a visual bug only.
 - The reduction by 50% on Starlit Scourge is janky. Will fix this at some later point
 
 A couple of notes:
+
 ## Notes:
+
 - I understand that things are going to be janky at times, and there are definitely bugs that will be worked out
 - **What to do if Hecar is not unlocked:** Due to some jankiness of the way the code works, Hecar is unlocked only for the profile that is open when you launch the game (and for new profiles). So if they aren't unlocked in the correct profile, switch to that profile, close the game and re-open it and they will be unlocked. I'll fix this in the future, but most people won't notice it. You can also just use the profile editor to fix it.
 - There are **no character events** for Hecar at this time beyond the ones that are available to all characters of a given class (such as pet trainers or healers being able to remove cards at Rest areas).
@@ -22,8 +25,6 @@ This mod relies on [Obeliskial Content](https://across-the-obelisk.thunderstore.
 ## Traits
 
 ![Hecar Info](https://raw.githubusercontent.com/binbinmods/Hecar/refs/heads/main/Assets/hecar2.png)
-
-
 
 ## Installation (manual)
 
@@ -43,10 +44,10 @@ This mod relies on [Obeliskial Content](https://across-the-obelisk.thunderstore.
 
 ## Support
 
-This has been updated for Across the Obelisk version 1.5.
+This has been updated for Across the Obelisk version 1.7.22.
 
 Hope you enjoy it and if have any issues, ping me in Discord or make a post in the **modding #support-and-requests** channel of the [official Across the Obelisk Discord](https://discord.gg/across-the-obelisk-679706811108163701).
 
 ## Donation
 
-Please do not donate to me. If you wish to support me, I would prefer it if you just gave me feedback. 
+Please do not donate to me. If you wish to support me, I would prefer it if you just gave me feedback.
