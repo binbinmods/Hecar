@@ -341,7 +341,7 @@ namespace Hecar
             //     LogDebug($"EndTurnPostfix - Applied {__state} Scourge");
             // }
             AuraCurseData scourge = GetAuraCurseData("scourge");
-            bool hasWaning = IsLivingHero(__instance) && (AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1b") ||AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1ba") ||AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1bb") );
+            bool hasWaning = IsLivingHero(__instance) && (AtOManager.Instance.CharacterHaveItem(__instance.SubclassName, "moontouchedtrait1b") || AtOManager.Instance.CharacterHaveItem(__instance.SubclassName, "moontouchedtrait1ba") || AtOManager.Instance.CharacterHaveItem(__instance.SubclassName, "moontouchedtrait1bb"));
             LogDebug($"EndTurnPostfix - Character {__instance.SourceName} Has Waning Blessing: {hasWaning}");
             if (hasWaning && __instance != null && __instance.Alive && __instance.GetAuraCharges("scourge") > 0)
             {
@@ -372,7 +372,7 @@ namespace Hecar
             //     LogDebug($"BeginTurnPostfix - Applied {__state} Scourge");
             // }
             AuraCurseData scourge = GetAuraCurseData("scourge");
-            bool hasWaning = IsLivingHero(__instance) && (AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1b") ||AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1ba") ||AtOManager.Instance.CharacterHaveItem(__instance.SubclassName,"moontouchedtrait1bb") );
+            bool hasWaning = IsLivingHero(__instance) && (AtOManager.Instance.CharacterHaveItem(__instance.SubclassName, "moontouchedtrait1b") || AtOManager.Instance.CharacterHaveItem(__instance.SubclassName, "moontouchedtrait1ba") || AtOManager.Instance.CharacterHaveItem(__instance.SubclassName, "moontouchedtrait1bb"));
             if (!hasWaning && __instance != null && __instance.Alive && __instance.GetAuraCharges("scourge") > 0)
             {
                 int nToApply = Mathf.RoundToInt(__instance.GetAuraCharges("scourge") * 0.5f);

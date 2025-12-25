@@ -65,5 +65,6 @@
     "Trait3A": "moontouchedtrait3a",
     "Trait3B": "moontouchedtrait3b",
     "Trait4A": "moontouchedtrait4a",
-    "Trait4B": "moontouchedtrait4b"
+    "Trait4B": "moontouchedtrait4b",
+    "CardsSingularity": ["moontouchedmentalshell","pandemonium","moontouchedanguish","mindblast","bindingheal","barrier","panacea","prayerofprotection","benediction","flashheal","clairvoyance","mindtwist","spectralmissiles","clarity","foresight"]
 }

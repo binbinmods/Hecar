@@ -1,3 +1,7 @@
+# 0.5.5
+
+Added Singularity Deck
+
 # 0.5.4
 
 Waning blessing activates at the start of round rather than turn (text might not update appropriately unless Balance Patch is active. This will be fixed with the next version of Obeliskial Essentials)
@@ -20,7 +24,7 @@ Fixed an issue with Eclipse Shield not improving Shield/Block until level 5.
 
 Removed the Testing text from Flash Heal
 
-Reflection is no longer craftable   
+Reflection is no longer craftable
 
 # 0.5.0
 
